@@ -11,7 +11,7 @@ from mt5_global import settings
 from mt5_actions.authorize import login
 from mt5_actions.tick import get_curr_ticks
 from mt5_actions.rates import get_curr_rates
-from mt5_actions.order import buy_order, sell_order
+from mt5_actions.order import buy_order, sell_order, check_order
 from mt5_global.settings import symbol, timeframe
 from models.model import scaler
 
@@ -55,20 +55,27 @@ def trade():
             curr_price = mt5.symbol_info_tick(symbol).ask
 
             if prediction > curr_price:
+                if check_order()['buy']:
+                    print('buy order already exists')
+                    time.sleep(2)
+                    continue
                 buy_order(prediction,symbol)
             elif prediction < curr_price:
+                if check_order()['sell']:
+                    print('sell order already exists')
+                    time.sleep(2)
+                    continue
                 sell_order(prediction,symbol)
             else:
                 print('no action')
+            rates = get_curr_rates(symbol,timeframe, 1)
         except Exception as e:
             print(e)
             print("order failed")
             login()
             time.sleep(2)
-
             rates = get_curr_rates(symbol,timeframe, 1)
-            pass
-        rates = get_curr_rates(symbol,timeframe, 1)
+
 
 
 
