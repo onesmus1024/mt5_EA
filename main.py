@@ -35,9 +35,6 @@ def trade():
             curr_rate_frame = pd.DataFrame(curr_rate)
             previous_rates_frame = pd.DataFrame(rates)
             if int(curr_rate_frame['time'])== int(previous_rates_frame['time']):
-                print('same time')
-                print(int(curr_rate_frame['time']))
-                print(int(previous_rates_frame['time']))
                 time.sleep(2)
                 continue
 
@@ -63,17 +60,14 @@ def trade():
             print(e)
             print("order failed")
             time.sleep(2)
-        finally:
             rates = get_curr_rates(symbol,timeframe, 1)
-            continue
-        
+            pass
+        rates = get_curr_rates(symbol,timeframe, 1)
 
 
 
 if __name__ == "__main__":
-    try:
-        trade()
-    except Exception as e:
-        print(e)
-        print("order not executed")
+    trade()
+   
+       
 
