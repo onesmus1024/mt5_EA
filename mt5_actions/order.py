@@ -12,9 +12,13 @@ def check_order():
     }
     # request the list of all orders
     orders = mt5.orders_get(symbol=symbol)
-    if orders.total == 0:
+    if orders is None :
+        print("No orders on"+symbol+", error code={}".format(mt5.last_error()))
         return dic_order
-    elif orders.total > 0:
+    elif not all(orders):
+        print("No orders on "+symbol)
+        return dic_order
+    else:
         for order in orders:
             if order.type == mt5.ORDER_TYPE_BUY:
                 dic_order["buy"] = True
@@ -72,9 +76,7 @@ def buy_order(prediction,symbol):
                 traderequest_dict=result_dict[field]._asdict()
                 for tradereq_filed in traderequest_dict:
                     print("       traderequest: {}={}".format(tradereq_filed,traderequest_dict[tradereq_filed]))
-                    print("shutdown() and quit")
-                    mt5.shutdown()
-                    quit()
+                   
  
     print("2. order_send done, ", result)
     print("   opened position with POSITION_TICKET={}".format(result.order))
