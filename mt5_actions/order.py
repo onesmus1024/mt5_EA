@@ -1,11 +1,26 @@
 import MetaTrader5 as mt5
 import  time
-
+from mt5_global.settings import symbol,timeframe
 
 if not mt5.initialize():
     print("initialize() failed, error code =",mt5.last_error())
     quit()
-
+def check_order():
+    dic_order = {
+        "sell":False,
+        "buy":False
+    }
+    # request the list of all orders
+    orders = mt5.orders_get(symbol=symbol)
+    if orders.total == 0:
+        return dic_order
+    elif orders.total > 0:
+        for order in orders:
+            if order.type == mt5.ORDER_TYPE_BUY:
+                dic_order["buy"] = True
+            elif order.type == mt5.ORDER_TYPE_SELL:
+                dic_order["sell"] = True
+    return dic_order
 def buy_order(prediction,symbol):
     
     lot = 0.1
