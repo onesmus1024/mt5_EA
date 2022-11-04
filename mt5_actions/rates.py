@@ -11,7 +11,7 @@ if not mt5.initialize():
 def get_rates(symbol, timeframe, utc_from, utc_to):
     
     # get 10 EURUSD H4 bars starting from 01.10.2020 in UTC time zone
-    rates = mt5.copy_rates_range(symbol,mt5.TIMEFRAME_H4, utc_from, utc_to)
+    rates = mt5.copy_rates_range(symbol,timeframe, utc_from, utc_to)
     return rates
 
 def get_curr_rates(symbol, timeframe, count):

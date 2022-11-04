@@ -10,7 +10,8 @@ import matplotlib.pyplot as plt
 import datetime
 import pytz
 from mt5_global import settings
-
+import time
+import os
 
 from mt5_actions.rates import get_rates
 from mt5_global.settings import symbol, timeframe
@@ -23,10 +24,12 @@ utc_to = datetime.datetime.now(tz=timezone)
 
 
 #get rates from mt5
-rates = get_rates(symbol,timeframe, utc_from, utc_to)
+rates = get_rates(symbol,mt5.TIMEFRAME_M15, utc_from, utc_to)
 
 # create DataFrame out of the obtained data
 rates_frame = pd.DataFrame(rates)
+print(rates_frame.head())
+
 rates_frame.drop(['time'], axis=1)
 print(rates_frame.head())
 rates_frame.info()
@@ -57,6 +60,12 @@ model = keras.Sequential([
 model.compile(optimizer='adam',loss='mse',metrics=['mae'])
 
 history = model.fit(x_train_rate,y_train_rate,epochs=100,validation_split=0.2,batch_size=50)
+root_dir = os.path.join(os.curdir,"models/saved_models")
+def get_run_logdir():
+    run_id =symbol+"-"+time.strftime("run_%Y_%m_%d-%H_%M_%S")
+    return run_id
+#save model
+model.save(os.path.join(root_dir,get_run_logdir()))
 
 def plot_learning_curves(history):
     plt.plot(history.history['loss'],label='loss',color='red')

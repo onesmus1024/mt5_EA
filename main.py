@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from tensorflow import keras
 import datetime
 import time
 import pytz
@@ -13,7 +14,9 @@ from mt5_global.settings import symbol, timeframe
 from models.model import scaler
 
 
+saved_model = None
 
+saved_model = keras.models.load_model("C:\mt5_dev\models\saved_models\EURUSD-run_2022_11_03-16_01_14")
 
 # order parameters
 lot = 0.1
@@ -27,37 +30,50 @@ def trade():
         return
     rates = get_curr_rates(symbol,timeframe, 1)
     while True:
-        curr_rate =get_curr_rates(symbol,timeframe, 1)
-        curr_rate_frame = pd.DataFrame(curr_rate)
-        rates_frame = pd.DataFrame(rates)
-        if int(curr_rate_frame['time'])== int(rates_frame['time']):
-            print('same time')
-            print(int(curr_rate_frame['time']))
-            print(int(rates_frame['time']))
+        try:
+            curr_rate =get_curr_rates(symbol,timeframe, 1)
+            curr_rate_frame = pd.DataFrame(curr_rate)
+            previous_rates_frame = pd.DataFrame(rates)
+            if int(curr_rate_frame['time'])== int(previous_rates_frame['time']):
+                print('same time')
+                print(int(curr_rate_frame['time']))
+                print(int(previous_rates_frame['time']))
+                time.sleep(2)
+                continue
+
+            #drop time column
+            previous_rates_frame=previous_rates_frame.drop(['time','close'], axis=1)
+        
+            #scale data
+            x_scaled = scaler.transform(previous_rates_frame)
+            x = pd.DataFrame(x_scaled, columns=['open','high','low','tick_volume','spread','real_volume'])
+            #predict
+            prediction = model.predict(x)
+            prediction = round(prediction[0][0],5)
+            #get current price
+            curr_price = mt5.symbol_info_tick(symbol).ask
+
+            if prediction > curr_price:
+                buy_order(prediction,symbol)
+            elif prediction < curr_price:
+                sell_order(prediction,symbol)
+            else:
+                print('no action')
+        except Exception as e:
+            print(e)
+            print("order failed")
             time.sleep(2)
+        finally:
+            rates = get_curr_rates(symbol,timeframe, 1)
             continue
-
-        #drop time column
-        rates_frame=rates_frame.drop(['time','close'], axis=1)
-      
-        #scale data
-        x_scaled = scaler.transform(rates_frame)
-        x = pd.DataFrame(x_scaled, columns=['open','high','low','tick_volume','spread','real_volume'])
-        #predict
-        prediction = model.predict(x)
-        prediction = round(prediction[0][0],5)
-        #get current price
-        curr_price = mt5.symbol_info_tick(symbol).ask
-
-        if prediction > curr_price:
-            buy_order(prediction,symbol)
-        elif prediction < curr_price:
-            sell_order(prediction,symbol)
-        else:
-            print('no action')
-        rates = get_curr_rates(symbol,timeframe, 1)
+        
 
 
 
 if __name__ == "__main__":
-    trade()
+    try:
+        trade()
+    except Exception as e:
+        print(e)
+        print("order not executed")
+
