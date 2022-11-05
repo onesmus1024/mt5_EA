@@ -16,7 +16,7 @@ from models.model import scaler
 
 saved_model = None
 
-saved_model = keras.models.load_model("C:\mt5_dev\models\saved_models\EURUSD-run_2022_11_03-16_01_14")
+saved_model = keras.models.load_model("C:\mt5_Bots\mt5_EA_v4\models\saved_models\EURUSD-run_2022_11_05-13_51_58")
 
 # order parameters
 lot = 0.1
@@ -49,17 +49,16 @@ def trade():
             prediction = round(prediction[0][0],5)
             #get current price
             curr_price = mt5.symbol_info_tick(symbol).ask
-
+            order_dic = check_order()
             if prediction > curr_price:
-                if check_order()['buy']:
+                if order_dic['buy']:
                     print('buy order already exists')
-                    time.sleep(2)
                     continue
                 buy_order(prediction,symbol)
             elif prediction < curr_price:
-                if check_order()['sell']:
+                if order_dic['sell']:
                     print('sell order already exists')
-                    time.sleep(2)
+                    
                     continue
                 sell_order(prediction,symbol)
             else:

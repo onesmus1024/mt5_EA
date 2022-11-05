@@ -49,9 +49,6 @@ x = pd.DataFrame(x_scaled, columns=['open','high','low','tick_volume','spread','
 x_train_rate,x_test_rate,y_train_rate,y_test_rates = train_test_split(x,y, test_size=0.2)
 
 
-
-
-
 model = keras.Sequential([
     keras.layers.Dense(512,input_shape=[6]),
     keras.layers.Dense(1)
