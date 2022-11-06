@@ -46,7 +46,7 @@ scaler = StandardScaler()
 scaler.fit(x)
 x_scaled = scaler.transform(x)
 x = pd.DataFrame(x_scaled, columns=['open','high','low','tick_volume','spread','real_volume'])
-x_train_rate,x_test_rate,y_train_rate,y_test_rates = train_test_split(x,y, test_size=0.2)
+x_train_rate,x_test_rate,y_train_rate,y_test_rates = train_test_split(x,y, test_size=0.2,shuffle=False)
 
 
 model = keras.Sequential([
