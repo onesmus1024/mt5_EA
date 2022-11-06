@@ -9,10 +9,12 @@ server = "MetaQuotes-Demo"
 
 
 def login()->bool:
-    if not mt5.initialize(login=account, password=password, server=server):
+    # if not mt5.initialize(login=account, password=password, server=server):
+    if not mt5.initialize():
         print("initialize() failed, error code =",mt5.last_error())
         quit()
-    authorized=mt5.login(account, password=password, server=server)
+    authorized=mt5.initialize()
+    # authorized=mt5.login(account, password=password, server=server)
 
     if authorized:
         print(mt5.account_info())

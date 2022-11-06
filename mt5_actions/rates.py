@@ -1,5 +1,8 @@
+from operator import imod
 import MetaTrader5 as mt5
-
+import pandas as pd
+import numpy as np
+from mt5_global.settings import symbol, timeframe
 
 
 
@@ -12,6 +15,8 @@ def get_rates(symbol, timeframe, utc_from, utc_to):
     
     # get 10 EURUSD H4 bars starting from 01.10.2020 in UTC time zone
     rates = mt5.copy_rates_range(symbol,timeframe, utc_from, utc_to)
+    rates_save = pd.DataFrame(rates)
+    rates_save.to_csv("Data/"+symbol+"--"+str(timeframe)+".csv")
     return rates
 
 def get_curr_rates(symbol, timeframe, count):

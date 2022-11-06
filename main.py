@@ -1,3 +1,4 @@
+from operator import mod
 import numpy as np
 import pandas as pd
 from tensorflow import keras
@@ -6,6 +7,7 @@ import time
 import pytz
 import MetaTrader5 as mt5
 from models.model import model
+from mt5_global import settings
 from mt5_actions.authorize import login
 from mt5_actions.tick import get_curr_ticks
 from mt5_actions.rates import get_curr_rates
@@ -16,13 +18,15 @@ from models.model import scaler
 
 saved_model = None
 
-saved_model = keras.models.load_model("C:\mt5_Bots\mt5_EA_v4\models\saved_models\EURUSD-run_2022_11_05-13_51_58")
 
 # order parameters
 lot = 0.1
 point = mt5.symbol_info(symbol).point
-
-
+if settings.Use_saved_model:
+    # keras.mode
+    my_model = keras.models.load_model("models/saved_models/EURUSD-run_2022_11_04-18_32_24")
+else:
+    my_model = model
 
 def trade():
     if not login():
@@ -45,7 +49,7 @@ def trade():
             x_scaled = scaler.transform(previous_rates_frame)
             x = pd.DataFrame(x_scaled, columns=['open','high','low','tick_volume','spread','real_volume'])
             #predict
-            prediction = model.predict(x)
+            prediction = my_model.predict(x)
             prediction = round(prediction[0][0],5)
             #get current price
             curr_price = mt5.symbol_info_tick(symbol).ask
@@ -67,9 +71,10 @@ def trade():
         except Exception as e:
             print(e)
             print("order failed")
+            login()
             time.sleep(2)
-            pass
-        
+            rates = get_curr_rates(symbol,timeframe, 1)
+
 
 
 
