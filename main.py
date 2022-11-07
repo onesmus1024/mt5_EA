@@ -20,7 +20,7 @@ saved_model = None
 
 if settings.Use_saved_model:
     # keras.mode
-    my_model = keras.models.load_model("models/saved_models/EURUSD-run_2022_11_04-18_32_24")
+    my_model = keras.models.load_model("./models/saved_models/EURUSD-run_2022_11_05-13_51_58")
 else:
     my_model = model
 
@@ -59,6 +59,7 @@ def trade():
             elif prediction < curr_price:
                 if order_dic['sell']:
                     print('sell order already exists')
+
                     rates = get_curr_rates(symbol,timeframe, 1)
                     continue
                 sell_order(prediction,symbol)

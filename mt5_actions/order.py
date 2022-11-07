@@ -39,7 +39,8 @@ def check_order():
         print("No orders on at all "+symbol)
         return dic_order
 def buy_order(prediction,symbol):
-    
+    global order_send_count
+    lot = 0.1
     price = mt5.symbol_info_tick(symbol).ask
     sl =price-(prediction-price)
     tp = price+(prediction-price)
@@ -67,14 +68,16 @@ def buy_order(prediction,symbol):
     # send a trading request
     result = mt5.order_send(request)
     # check the execution result
-    print("1. order_send(): by {} {} lots at {} with deviation={} points".format(symbol,lot,price,deviation));
-    if ((result.retcode != mt5.TRADE_RETCODE_DONE) or (result.retcode != mt5.TRADE_RETCODE_PLACED)) :
+    print("1. order_send(): by {} {} lots at {} with deviation={} points".format(symbol,lot,price,deviation))
+    # if ((result.retcode != mt5.TRADE_RETCODE_DONE) or (result.retcode != mt5.TRADE_RETCODE_PLACED)) :
+    if result.retcode not in [mt5.TRADE_RETCODE_PLACED, mt5.TRADE_RETCODE_DONE]:
         if result.retcode == mt5.TRADE_RETCODE_REQUOTE and order_send_count <= 4:
             time.sleep(1)
             buy_order(prediction, symbol)
+            order_send_count += 1
         else:
             order_send_count = 0
-            return print("Order Resend Failed")
+            return print("Order Resend Failed\n", result.comment)
         print("2. order_send failed, retcode={}".format(result))
         # request the result as a dictionary and display it element by element
         result_dict=result._asdict()
@@ -93,7 +96,7 @@ def buy_order(prediction,symbol):
 
 
 def sell_order(prediction,symbol):
-
+    global order_send_count
     lot = 0.1
     price = mt5.symbol_info_tick(symbol).bid
     sl =price+(price-prediction)
@@ -120,14 +123,15 @@ def sell_order(prediction,symbol):
     result = mt5.order_send(request)
     order_send_count += 1
     # check the execution result
-    print("1. order_send(): by {} {} lots at {} with deviation={} points".format(symbol,lot,price,deviation));
+    print("1. order_send(): by {} {} lots at {} with deviation={} points".format(symbol,lot,price,deviation))
     if ((result.retcode != mt5.TRADE_RETCODE_DONE) or (result.retcode != mt5.TRADE_RETCODE_PLACED)):
-        if result.retcode == mt5.TRADE_RETCODE_REQUOTE and order_send_count <= 4:
+        if ((result.retcode == mt5.TRADE_RETCODE_REQUOTE) and (order_send_count <= 4)):
             time.sleep(1)
             buy_order(prediction, symbol)
+            order_send_count += 1
         else:
             order_send_count = 0
-            return "Order Resend Failed"
+            return print("Order Resend Failed\n"+ result.comment)
         print("2. order_send failed, retcode={}".format(result))
         # request the result as a dictionary and display it element by element
         result_dict=result._asdict()
