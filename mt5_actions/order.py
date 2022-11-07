@@ -68,8 +68,9 @@ def buy_order(prediction,symbol):
     # send a trading request
     result = mt5.order_send(request)
     # check the execution result
-    print("1. order_send(): by {} {} lots at {} with deviation={} points".format(symbol,lot,price,deviation));
-    if ((result.retcode != mt5.TRADE_RETCODE_DONE) or (result.retcode != mt5.TRADE_RETCODE_PLACED)) :
+    print("1. order_send(): by {} {} lots at {} with deviation={} points".format(symbol,lot,price,deviation))
+    # if ((result.retcode != mt5.TRADE_RETCODE_DONE) or (result.retcode != mt5.TRADE_RETCODE_PLACED)) :
+    if result.retcode not in [mt5.TRADE_RETCODE_PLACED, mt5.TRADE_RETCODE_DONE]:
         if result.retcode == mt5.TRADE_RETCODE_REQUOTE and order_send_count <= 4:
             time.sleep(1)
             buy_order(prediction, symbol)
