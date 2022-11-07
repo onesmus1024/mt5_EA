@@ -63,7 +63,7 @@ def create_model():
 
     model.compile(optimizer='adam',loss='mse',metrics=['mae'])
 
-    history = model.fit(x_train_rate,y_train_rate,epochs=100,validation_split=0.2,batch_size=50)
+    history = model.fit(x_train_rate,y_train_rate,epochs=7,validation_split=0.2,batch_size=50)
     root_dir = os.path.join(os.curdir,"models/saved_models")
     def get_run_logdir():
         run_id =symbol+"-"+time.strftime("run_%Y_%m_%d-%H_%M_%S")

@@ -53,17 +53,17 @@ def trade():
             prediction = round(prediction[0][0],5)
             #get current price
             curr_price = mt5.symbol_info_tick(symbol).ask
-
+            order_dic = check_order()
             if prediction > curr_price:
-                if check_order()['buy']:
+                if order_dic['buy']:
                     print('buy order already exists')
-                    time.sleep(2)
                     continue
                 buy_order(prediction,symbol)
             elif prediction < curr_price:
-                if check_order()['sell']:
+                if order_dic['sell']:
                     print('sell order already exists')
-                    time.sleep(2)
+
+                    
                     continue
                 sell_order(prediction,symbol)
             else:
