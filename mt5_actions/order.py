@@ -5,6 +5,7 @@ from mt5_global.settings import symbol,Model_type
 
 lot = 0.1
 deviation = 20
+order_send_count = 0
 request = {
     "action": mt5.TRADE_ACTION_DEAL,
     "symbol": symbol,
@@ -18,16 +19,13 @@ request = {
     }
 
 def check_order():
-    if not mt5.initialize():
-        print("initialize() failed, error code =",mt5.last_error())
-        quit()
+   
     dic_order = {
         "sell":False,
         "buy":False
     }
     # request the list of all orders
-    positions = mt5.positions_get(symbol="EURUSD")
-    print(positions,"orders")
+    positions = mt5.positions_get(symbol=symbol)
     if positions:
         for position in positions:
             print(position)
@@ -42,12 +40,11 @@ def check_order():
         return dic_order
 def buy_order(prediction,symbol):
     
-    lot = 0.1
     price = mt5.symbol_info_tick(symbol).ask
     sl =price-(prediction-price)
     tp = price+(prediction-price)
     symbol_info = mt5.symbol_info(symbol)
-
+    
     if symbol_info is None:
         print(symbol, "not found, can not call order_check()")
         mt5.shutdown()
@@ -77,7 +74,7 @@ def buy_order(prediction,symbol):
             buy_order(prediction, symbol)
         else:
             order_send_count = 0
-            return "Order Resend Failed"
+            return print("Order Resend Failed")
         print("2. order_send failed, retcode={}".format(result))
         # request the result as a dictionary and display it element by element
         result_dict=result._asdict()
@@ -88,12 +85,11 @@ def buy_order(prediction,symbol):
                 traderequest_dict=result_dict[field]._asdict()
                 for tradereq_filed in traderequest_dict:
                     print("       traderequest: {}={}".format(tradereq_filed,traderequest_dict[tradereq_filed]))
-                    print("shutdown() and quit")
-                    mt5.shutdown()
-                    quit()
+                   
  
     print("2. order_send done, ", result)
-    print("3. opened position with POSITION_TICKET={}".format(result.order))
+    print("   opened position with POSITION_TICKET={}".format(result.order))
+
 
 
 def sell_order(prediction,symbol):

@@ -1,19 +1,19 @@
 import MetaTrader5 as mt5
 
-account =63685684
-password = "7zphhamd"
+account =5007689229
+password = "xbgnr3em"
 server = "MetaQuotes-Demo"
-
+path = "C:\\Program Files\\MetaTrader 5\\terminal64.exe"
 
 
 
 
 def login()->bool:
     # if not mt5.initialize(login=account, password=password, server=server):
-    if not mt5.initialize():
+    if not mt5.initialize(path=path,login=account, password=password, server=server):
         print("initialize() failed, error code =",mt5.last_error())
         quit()
-    authorized=mt5.initialize()
+    authorized=mt5.login(account, password, server=server)
     # authorized=mt5.login(account, password=password, server=server)
 
     if authorized:
