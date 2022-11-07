@@ -1,9 +1,9 @@
 import MetaTrader5 as mt5
 
-account =63685684
-password = "7zphhamd"
+account =5007689229
+password = "xbgnr3em"
 server = "MetaQuotes-Demo"
-
+path = "C:\\Program Files\\MetaTrader 5\\terminal64.exe"
 
 
 
