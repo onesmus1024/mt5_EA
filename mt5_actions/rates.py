@@ -1,4 +1,4 @@
-from operator import imod
+
 import MetaTrader5 as mt5
 import pandas as pd
 import numpy as np

@@ -35,7 +35,7 @@ def trade():
             curr_rate_frame = pd.DataFrame(curr_rate)
             previous_rates_frame = pd.DataFrame(rates)
             if int(curr_rate_frame['time'])== int(previous_rates_frame['time']):
-                time.sleep(2)
+                time.sleep(5)
                 continue
 
             #drop time column
